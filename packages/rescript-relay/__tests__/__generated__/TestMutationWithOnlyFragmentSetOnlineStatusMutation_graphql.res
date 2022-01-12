@@ -43,12 +43,16 @@ module Types = {
   and response_setOnlineStatus = {
     @live user: option<response_setOnlineStatus_user>,
   }
+  and rawResponse_setOnlineStatus_user_friends = {
+    @live id: string,
+  }
   and rawResponse_setOnlineStatus_user = {
     @live id: string,
     @live firstName: string,
     @live lastName: string,
     @live onlineStatus: option<enum_OnlineStatus>,
     @live memberOf: option<array<option<rawResponse_setOnlineStatus_user_memberOf>>>,
+    @live friends: array<rawResponse_setOnlineStatus_user_friends>,
   }
   and rawResponse_setOnlineStatus = {
     @live user: option<rawResponse_setOnlineStatus_user>,
@@ -215,19 +219,26 @@ module Utils = {
     id: id,
     name: name
   }
+  @live let make_rawResponse_setOnlineStatus_user_friends = (
+    ~id
+  ): rawResponse_setOnlineStatus_user_friends => {
+    id: id
+  }
   @live let make_rawResponse_setOnlineStatus_user = (
     ~id,
     ~firstName,
     ~lastName,
     ~onlineStatus=?,
     ~memberOf=?,
+    ~friends,
     ()
   ): rawResponse_setOnlineStatus_user => {
     id: id,
     firstName: firstName,
     lastName: lastName,
     onlineStatus: onlineStatus,
-    memberOf: memberOf
+    memberOf: memberOf,
+    friends: friends
   }
   @live let make_rawResponse_setOnlineStatus = (
     ~user=?,
@@ -269,7 +280,10 @@ v3 = {
   "kind": "ScalarField",
   "name": "firstName",
   "storageKey": null
-};
+},
+v4 = [
+  (v2/*: any*/)
+];
 return {
   "fragment": {
     "argumentDefinitions": (v0/*: any*/),
@@ -385,13 +399,21 @@ return {
                   },
                   {
                     "kind": "InlineFragment",
-                    "selections": [
-                      (v2/*: any*/)
-                    ],
+                    "selections": (v4/*: any*/),
                     "type": "Node",
                     "abstractKey": "__isNode"
                   }
                 ],
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "concreteType": "User",
+                "kind": "LinkedField",
+                "name": "friends",
+                "plural": true,
+                "selections": (v4/*: any*/),
                 "storageKey": null
               }
             ],
@@ -403,12 +425,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "724fcaffced61b930d2c0273b67c23c1",
+    "cacheID": "7e339f309844d8f970fbfd3267ab4ce5",
     "id": null,
     "metadata": {},
     "name": "TestMutationWithOnlyFragmentSetOnlineStatusMutation",
     "operationKind": "mutation",
-    "text": "mutation TestMutationWithOnlyFragmentSetOnlineStatusMutation(\n  $onlineStatus: OnlineStatus!\n) {\n  setOnlineStatus(onlineStatus: $onlineStatus) {\n    user {\n      ...TestMutation_user\n      id\n    }\n  }\n}\n\nfragment TestMutation_user on User {\n  id\n  firstName\n  lastName\n  onlineStatus\n  memberOf {\n    __typename\n    ... on User {\n      firstName\n    }\n    ... on Group {\n      name\n    }\n    ... on Node {\n      __typename\n      __isNode: __typename\n      id\n    }\n  }\n}\n"
+    "text": "mutation TestMutationWithOnlyFragmentSetOnlineStatusMutation(\n  $onlineStatus: OnlineStatus!\n) {\n  setOnlineStatus(onlineStatus: $onlineStatus) {\n    user {\n      ...TestMutation_user\n      id\n    }\n  }\n}\n\nfragment TestMutation_user on User {\n  id\n  firstName\n  lastName\n  onlineStatus\n  memberOf {\n    __typename\n    ... on User {\n      firstName\n    }\n    ... on Group {\n      name\n    }\n    ... on Node {\n      __typename\n      __isNode: __typename\n      id\n    }\n  }\n  friends {\n    id\n  }\n}\n"
   }
 };
 })() `)

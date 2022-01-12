@@ -33,12 +33,16 @@ module Types = {
     | #UnselectedUnionMember(string)
   ]
 
+  type rec fragment_friends = {
+    @live id: string,
+  }
   type fragment = {
     @live id: string,
     firstName: string,
     lastName: string,
     onlineStatus: option<enum_OnlineStatus>,
     memberOf: option<array<option<fragment_memberOf>>>,
+    friends: array<fragment_friends>,
   }
 }
 
@@ -116,6 +120,13 @@ var v0 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
+},
+v1 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
   "name": "firstName",
   "storageKey": null
 };
@@ -125,14 +136,8 @@ return {
   "metadata": null,
   "name": "TestMutation_user",
   "selections": [
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "id",
-      "storageKey": null
-    },
     (v0/*: any*/),
+    (v1/*: any*/),
     {
       "alias": null,
       "args": null,
@@ -165,7 +170,7 @@ return {
         {
           "kind": "InlineFragment",
           "selections": [
-            (v0/*: any*/)
+            (v1/*: any*/)
           ],
           "type": "User",
           "abstractKey": null
@@ -184,6 +189,18 @@ return {
           "type": "Group",
           "abstractKey": null
         }
+      ],
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "concreteType": "User",
+      "kind": "LinkedField",
+      "name": "friends",
+      "plural": true,
+      "selections": [
+        (v0/*: any*/)
       ],
       "storageKey": null
     }

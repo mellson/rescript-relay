@@ -91,7 +91,10 @@ v1 = {
   "kind": "ScalarField",
   "name": "firstName",
   "storageKey": null
-};
+},
+v2 = [
+  (v0/*: any*/)
+];
 return {
   "fragment": {
     "argumentDefinitions": [],
@@ -188,13 +191,21 @@ return {
               },
               {
                 "kind": "InlineFragment",
-                "selections": [
-                  (v0/*: any*/)
-                ],
+                "selections": (v2/*: any*/),
                 "type": "Node",
                 "abstractKey": "__isNode"
               }
             ],
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "concreteType": "User",
+            "kind": "LinkedField",
+            "name": "friends",
+            "plural": true,
+            "selections": (v2/*: any*/),
             "storageKey": null
           }
         ],
@@ -203,12 +214,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "8edaef2797477d02dd008e45c1e9368e",
+    "cacheID": "72da7f3ccf950665e14d7dc2e018adf6",
     "id": null,
     "metadata": {},
     "name": "TestMutationQuery",
     "operationKind": "query",
-    "text": "query TestMutationQuery {\n  loggedInUser {\n    ...TestMutation_user\n    id\n  }\n}\n\nfragment TestMutation_user on User {\n  id\n  firstName\n  lastName\n  onlineStatus\n  memberOf {\n    __typename\n    ... on User {\n      firstName\n    }\n    ... on Group {\n      name\n    }\n    ... on Node {\n      __typename\n      __isNode: __typename\n      id\n    }\n  }\n}\n"
+    "text": "query TestMutationQuery {\n  loggedInUser {\n    ...TestMutation_user\n    id\n  }\n}\n\nfragment TestMutation_user on User {\n  id\n  firstName\n  lastName\n  onlineStatus\n  memberOf {\n    __typename\n    ... on User {\n      firstName\n    }\n    ... on Group {\n      name\n    }\n    ... on Node {\n      __typename\n      __isNode: __typename\n      id\n    }\n  }\n  friends {\n    id\n  }\n}\n"
   }
 };
 })() `)

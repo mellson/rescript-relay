@@ -18,6 +18,7 @@ describe("Mutation", () => {
           firstName: "First",
           lastName: "Name",
           onlineStatus: "Online",
+          friends: [],
           memberOf,
         },
       },
@@ -38,6 +39,7 @@ describe("Mutation", () => {
             firstName: "First",
             lastName: "Name",
             onlineStatus: "Idle",
+            friends: [],
           },
         },
       },
@@ -59,6 +61,7 @@ describe("Mutation", () => {
           firstName: "First",
           lastName: "Name",
           onlineStatus: "Online",
+          friends: [],
           memberOf,
         },
       },
@@ -79,6 +82,7 @@ describe("Mutation", () => {
             firstName: "First",
             lastName: "Name",
             onlineStatus: "Idle",
+            friends: [],
           },
         },
       },
@@ -108,6 +112,7 @@ describe("Mutation", () => {
           firstName: "First",
           lastName: "Name",
           onlineStatus: "Online",
+          friends: [],
           memberOf,
         },
       },
@@ -158,6 +163,7 @@ describe("Mutation", () => {
           firstName: "First",
           lastName: "Name",
           onlineStatus: "Online",
+          friends: [],
           memberOf,
         },
       },
@@ -178,6 +184,7 @@ describe("Mutation", () => {
             firstName: "First",
             lastName: "Name",
             onlineStatus: "Idle",
+            friends: [],
           },
         },
       },
@@ -205,6 +212,7 @@ describe("Mutation", () => {
           firstName: "First",
           lastName: "Name",
           onlineStatus: "Online",
+          friends: [],
           memberOf,
         },
       },
@@ -225,6 +233,7 @@ describe("Mutation", () => {
             firstName: "First",
             lastName: "Name",
             onlineStatus: "Idle",
+            friends: [],
           },
         },
       },
@@ -248,6 +257,7 @@ describe("Mutation", () => {
           firstName: "First",
           lastName: "Name",
           onlineStatus: "Online",
+          friends: [],
           memberOf,
         },
       },
@@ -270,6 +280,7 @@ describe("Mutation", () => {
             firstName: "First",
             lastName: "Name",
             onlineStatus: "Idle",
+            friends: [],
           },
         },
       },
@@ -288,5 +299,42 @@ describe("Mutation", () => {
     });
     // @TODO: find out why commitMutation's onComplete callback isn't being run.
     // await t.screen.findByText("Inline status: idle");
+  });
+
+  test("Test multiple mutation targets", async () => {
+    queryMock.mockQuery({
+      name: "TestMutationQuery",
+      data: {
+        loggedInUser: {
+          id: "user-1",
+          firstName: "First",
+          lastName: "Name",
+          onlineStatus: "Online",
+          friends: [],
+          memberOf,
+        },
+      },
+    });
+
+    t.render(test_mutation());
+    await t.screen.findByText("First is online");
+
+    queryMock.mockQuery({
+      name: "MutationWithMultipleTargets",
+      variables: {
+        friendId: "user-1",
+      },
+      data: {
+        addedFriend: {
+          id: "user-1",
+        },
+      },
+    });
+
+    ReactTestUtils.act(() => {
+      t.fireEvent.click(t.screen.getByText("Test multiple targets"));
+    });
+
+    await t.screen.findByText("Number of friends: 1");
   });
 });

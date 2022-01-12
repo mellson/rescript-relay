@@ -54,6 +54,9 @@ module Fragment = %relay(`
           name
         }
       }
+      friends {
+        id
+      }
     }
 `)
 
@@ -73,6 +76,19 @@ module InlineFragment = %relay(`
       firstName
       lastName
       onlineStatus
+    }
+`)
+
+module MutationWithMultipleTargets = %relay(`
+    mutation TestMutationWithMultipleTargetsMutation($friendId: ID!) {
+      addFriend(friendId: $friendId) {
+        addedFriend{
+          id
+          friends {
+            id
+          }
+        }
+      }
     }
 `)
 
@@ -97,6 +113,9 @@ module Test = {
         }),
       )}
       <div> {React.string("Inline status: " ++ inlineStatus)} </div>
+      <div>
+        {React.string("Number of friends: " ++ data.friends->Array.length->Belt.Int.toString)}
+      </div>
       <button
         onClick={_ => {
           let _ = {
@@ -130,6 +149,7 @@ module Test = {
                       ),
                     ],
                     ~onlineStatus=#Idle,
+                    ~friends=[],
                     (),
                   ),
                   (),
@@ -268,6 +288,32 @@ module Test = {
           )
         }}>
         {React.string("Change online status with updater")}
+      </button>
+      <button
+        onClick={_ => {
+          open MutationWithMultipleTargets
+
+          let _ = commitMutation(
+            ~environment,
+            ~variables={friendId: "1"},
+            ~optimisticResponse=makeOptimisticResponse(
+              ~setOnlineStatus=make_rawResponse_setOnlineStatus(
+                ~user=make_rawResponse_setOnlineStatus_user(
+                  ~id=data.id,
+                  ~__id=data.id->RescriptRelay.makeDataId,
+                  ~onlineStatus=#Idle,
+                  ~firstName=data.firstName,
+                  ~lastName=data.lastName,
+                  (),
+                ),
+                (),
+              ),
+              (),
+            ),
+            (),
+          )
+        }}>
+        {React.string("Test multiple targets")}
       </button>
     </div>
   }
