@@ -80,19 +80,19 @@ module InlineFragment = %relay(`
 `)
 
 module MutationWithMultipleTargets = %relay(`
-    mutation TestMutationWithMultipleTargetsMutation($friendId: ID!, $onlineStatus: OnlineStatus!) @raw_response_type {
+    mutation TestMutationWithMultipleTargetsMutation($id: Int!, $ids: [Int!]!, $friendId: ID!) @raw_response_type {
+      testIntInput1(id: $id) {
+        success
+      }
+      testIntInput2(ids: $ids) {
+        success
+      }
       addFriend(friendId: $friendId) {
         addedFriend{
           id
           friends {
             id
           }
-        }
-      }
-
-      setOnlineStatus(onlineStatus: $onlineStatus) {
-        user {
-          id
         }
       }
     }
@@ -298,24 +298,9 @@ module Test = {
       <button
         onClick={_ => {
           open MutationWithMultipleTargets
-
           let _ = commitMutation(
             ~environment,
-            ~variables={friendId: "user-1", onlineStatus: #Idle},
-            ~optimisticResponse=makeOptimisticResponse(
-              ~addFriend=make_rawResponse_addFriend(
-                ~addedFriend=make_rawResponse_addFriend_addedFriend(
-                  ~id=data.id,
-                  ~friends=[{id: "user-1"}],
-                ),
-                (),
-              ),
-              ~setOnlineStatus=make_rawResponse_setOnlineStatus(
-                ~user=make_rawResponse_setOnlineStatus_user(~id=data.id),
-                (),
-              ),
-              (),
-            ),
+            ~variables={id: 1, ids: [1, 2], friendId: "user-1"},
             (),
           )
         }}>

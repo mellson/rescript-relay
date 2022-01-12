@@ -320,14 +320,24 @@ describe("Mutation", () => {
     await t.screen.findByText("First is online");
 
     queryMock.mockQuery({
-      name: "MutationWithMultipleTargets",
+      name: "TestMutationWithMultipleTargetsMutation",
       variables: {
+        id: 1,
+        ids: [1, 2],
         friendId: "user-1",
       },
       data: {
-        addedFriend: {
-          id: "user-1",
-          friends: [{ id: "user-1" }],
+        testIntInput1: {
+          success: true,
+        },
+        testIntInput2: {
+          success: true,
+        },
+        addFriend: {
+          addedFriend: {
+            id: "user-1",
+            friends: [{ id: "user-1" }],
+          },
         },
       },
     });

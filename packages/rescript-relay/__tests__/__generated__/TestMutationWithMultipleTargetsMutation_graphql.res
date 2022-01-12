@@ -4,22 +4,13 @@
 module Types = {
   @@ocaml.warning("-30")
 
-  type enum_OnlineStatus = private [>
-      | #Online
-      | #Idle
-      | #Offline
-    ]
-
-  @live
-  type enum_OnlineStatus_input = [
-      | #Online
-      | #Idle
-      | #Offline
-    ]
-
-
-
-  type rec response_addFriend_addedFriend_friends = {
+  type rec response_testIntInput1 = {
+    @live success: option<bool>,
+  }
+  and response_testIntInput2 = {
+    @live success: option<bool>,
+  }
+  and response_addFriend_addedFriend_friends = {
     @live id: string,
   }
   and response_addFriend_addedFriend = {
@@ -29,11 +20,11 @@ module Types = {
   and response_addFriend = {
     @live addedFriend: option<response_addFriend_addedFriend>,
   }
-  and response_setOnlineStatus_user = {
-    @live id: string,
+  and rawResponse_testIntInput1 = {
+    @live success: option<bool>,
   }
-  and response_setOnlineStatus = {
-    @live user: option<response_setOnlineStatus_user>,
+  and rawResponse_testIntInput2 = {
+    @live success: option<bool>,
   }
   and rawResponse_addFriend_addedFriend_friends = {
     @live id: string,
@@ -45,28 +36,20 @@ module Types = {
   and rawResponse_addFriend = {
     @live addedFriend: option<rawResponse_addFriend_addedFriend>,
   }
-  and rawResponse_setOnlineStatus_user = {
-    @live id: string,
-  }
-  and rawResponse_setOnlineStatus = {
-    @live user: option<rawResponse_setOnlineStatus_user>,
-  }
   type response = {
+    @live testIntInput1: option<response_testIntInput1>,
+    @live testIntInput2: option<response_testIntInput2>,
     @live addFriend: option<response_addFriend>,
-    @live setOnlineStatus: option<response_setOnlineStatus>,
   }
   type rawResponse = {
+    @live testIntInput1: option<rawResponse_testIntInput1>,
+    @live testIntInput2: option<rawResponse_testIntInput2>,
     @live addFriend: option<rawResponse_addFriend>,
-    @live setOnlineStatus: option<rawResponse_setOnlineStatus>,
   }
   type variables = {
+    @live id: int,
+    @live ids: array<int>,
     @live friendId: string,
-    @live onlineStatus: [
-      | #Online
-      | #Idle
-      | #Offline
-    ]
-,
   }
 }
 
@@ -143,35 +126,36 @@ module Internal = {
 module Utils = {
   @@ocaml.warning("-33")
   open Types
-  @live
-  external onlineStatus_toString: enum_OnlineStatus => string = "%identity"
-  @live
-  external onlineStatus_input_toString: enum_OnlineStatus_input => string = "%identity"
-  @live
-  let onlineStatus_decode = (enum: enum_OnlineStatus): option<enum_OnlineStatus_input> => {
-    switch enum {
-      | #...enum_OnlineStatus_input as valid => Some(valid)
-      | _ => None
-    }
-  }
-  @live
-  let onlineStatus_fromString = (str: string): option<enum_OnlineStatus_input> => {
-    onlineStatus_decode(Obj.magic(str))
-  }
   @live let makeVariables = (
-    ~friendId,
-    ~onlineStatus
+    ~id,
+    ~ids,
+    ~friendId
   ): variables => {
-    friendId: friendId,
-    onlineStatus: onlineStatus
+    id: id,
+    ids: ids,
+    friendId: friendId
   }
   @live let makeOptimisticResponse = (
+    ~testIntInput1=?,
+    ~testIntInput2=?,
     ~addFriend=?,
-    ~setOnlineStatus=?,
     ()
   ): rawResponse => {
-    addFriend: addFriend,
-    setOnlineStatus: setOnlineStatus
+    testIntInput1: testIntInput1,
+    testIntInput2: testIntInput2,
+    addFriend: addFriend
+  }
+  @live let make_rawResponse_testIntInput1 = (
+    ~success=?,
+    ()
+  ): rawResponse_testIntInput1 => {
+    success: success
+  }
+  @live let make_rawResponse_testIntInput2 = (
+    ~success=?,
+    ()
+  ): rawResponse_testIntInput2 => {
+    success: success
   }
   @live let make_rawResponse_addFriend_addedFriend_friends = (
     ~id
@@ -191,17 +175,6 @@ module Utils = {
   ): rawResponse_addFriend => {
     addedFriend: addedFriend
   }
-  @live let make_rawResponse_setOnlineStatus_user = (
-    ~id
-  ): rawResponse_setOnlineStatus_user => {
-    id: id
-  }
-  @live let make_rawResponse_setOnlineStatus = (
-    ~user=?,
-    ()
-  ): rawResponse_setOnlineStatus => {
-    user: user
-  }
 }
 
 type relayOperationNode
@@ -209,29 +182,70 @@ type operationType = RescriptRelay.mutationNode<relayOperationNode>
 
 
 let node: operationType = %raw(json` (function(){
-var v0 = [
+var v0 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "friendId"
+},
+v1 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "id"
+},
+v2 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "ids"
+},
+v3 = [
   {
-    "defaultValue": null,
-    "kind": "LocalArgument",
-    "name": "friendId"
-  },
-  {
-    "defaultValue": null,
-    "kind": "LocalArgument",
-    "name": "onlineStatus"
+    "alias": null,
+    "args": null,
+    "kind": "ScalarField",
+    "name": "success",
+    "storageKey": null
   }
 ],
-v1 = {
+v4 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
 },
-v2 = [
-  (v1/*: any*/)
-],
-v3 = [
+v5 = [
+  {
+    "alias": null,
+    "args": [
+      {
+        "kind": "Variable",
+        "name": "id",
+        "variableName": "id"
+      }
+    ],
+    "concreteType": "TestIntInputPayload",
+    "kind": "LinkedField",
+    "name": "testIntInput1",
+    "plural": false,
+    "selections": (v3/*: any*/),
+    "storageKey": null
+  },
+  {
+    "alias": null,
+    "args": [
+      {
+        "kind": "Variable",
+        "name": "ids",
+        "variableName": "ids"
+      }
+    ],
+    "concreteType": "TestIntInputPayload",
+    "kind": "LinkedField",
+    "name": "testIntInput2",
+    "plural": false,
+    "selections": (v3/*: any*/),
+    "storageKey": null
+  },
   {
     "alias": null,
     "args": [
@@ -254,7 +268,7 @@ v3 = [
         "name": "addedFriend",
         "plural": false,
         "selections": [
-          (v1/*: any*/),
+          (v4/*: any*/),
           {
             "alias": null,
             "args": null,
@@ -262,37 +276,12 @@ v3 = [
             "kind": "LinkedField",
             "name": "friends",
             "plural": true,
-            "selections": (v2/*: any*/),
+            "selections": [
+              (v4/*: any*/)
+            ],
             "storageKey": null
           }
         ],
-        "storageKey": null
-      }
-    ],
-    "storageKey": null
-  },
-  {
-    "alias": null,
-    "args": [
-      {
-        "kind": "Variable",
-        "name": "onlineStatus",
-        "variableName": "onlineStatus"
-      }
-    ],
-    "concreteType": "SetOnlineStatusPayload",
-    "kind": "LinkedField",
-    "name": "setOnlineStatus",
-    "plural": false,
-    "selections": [
-      {
-        "alias": null,
-        "args": null,
-        "concreteType": "User",
-        "kind": "LinkedField",
-        "name": "user",
-        "plural": false,
-        "selections": (v2/*: any*/),
         "storageKey": null
       }
     ],
@@ -301,28 +290,36 @@ v3 = [
 ];
 return {
   "fragment": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v0/*: any*/),
+      (v1/*: any*/),
+      (v2/*: any*/)
+    ],
     "kind": "Fragment",
     "metadata": null,
     "name": "TestMutationWithMultipleTargetsMutation",
-    "selections": (v3/*: any*/),
+    "selections": (v5/*: any*/),
     "type": "Mutation",
     "abstractKey": null
   },
   "kind": "Request",
   "operation": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v1/*: any*/),
+      (v2/*: any*/),
+      (v0/*: any*/)
+    ],
     "kind": "Operation",
     "name": "TestMutationWithMultipleTargetsMutation",
-    "selections": (v3/*: any*/)
+    "selections": (v5/*: any*/)
   },
   "params": {
-    "cacheID": "0ebd06ecce912e7261783330567dc866",
+    "cacheID": "312aa067064fe644c9b2e4d14ad21bbd",
     "id": null,
     "metadata": {},
     "name": "TestMutationWithMultipleTargetsMutation",
     "operationKind": "mutation",
-    "text": "mutation TestMutationWithMultipleTargetsMutation(\n  $friendId: ID!\n  $onlineStatus: OnlineStatus!\n) {\n  addFriend(friendId: $friendId) {\n    addedFriend {\n      id\n      friends {\n        id\n      }\n    }\n  }\n  setOnlineStatus(onlineStatus: $onlineStatus) {\n    user {\n      id\n    }\n  }\n}\n"
+    "text": "mutation TestMutationWithMultipleTargetsMutation(\n  $id: Int!\n  $ids: [Int!]!\n  $friendId: ID!\n) {\n  testIntInput1(id: $id) {\n    success\n  }\n  testIntInput2(ids: $ids) {\n    success\n  }\n  addFriend(friendId: $friendId) {\n    addedFriend {\n      id\n      friends {\n        id\n      }\n    }\n  }\n}\n"
   }
 };
 })() `)
