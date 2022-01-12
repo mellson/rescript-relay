@@ -80,13 +80,19 @@ module InlineFragment = %relay(`
 `)
 
 module MutationWithMultipleTargets = %relay(`
-    mutation TestMutationWithMultipleTargetsMutation($friendId: ID!) {
+    mutation TestMutationWithMultipleTargetsMutation($friendId: ID!, $onlineStatus: OnlineStatus!) @raw_response_type {
       addFriend(friendId: $friendId) {
         addedFriend{
           id
           friends {
             id
           }
+        }
+      }
+
+      setOnlineStatus(onlineStatus: $onlineStatus) {
+        user {
+          id
         }
       }
     }
@@ -295,17 +301,17 @@ module Test = {
 
           let _ = commitMutation(
             ~environment,
-            ~variables={friendId: "1"},
+            ~variables={friendId: "user-1", onlineStatus: #Idle},
             ~optimisticResponse=makeOptimisticResponse(
-              ~setOnlineStatus=make_rawResponse_setOnlineStatus(
-                ~user=make_rawResponse_setOnlineStatus_user(
+              ~addFriend=make_rawResponse_addFriend(
+                ~addedFriend=make_rawResponse_addFriend_addedFriend(
                   ~id=data.id,
-                  ~__id=data.id->RescriptRelay.makeDataId,
-                  ~onlineStatus=#Idle,
-                  ~firstName=data.firstName,
-                  ~lastName=data.lastName,
-                  (),
+                  ~friends=[{id: "user-1"}],
                 ),
+                (),
+              ),
+              ~setOnlineStatus=make_rawResponse_setOnlineStatus(
+                ~user=make_rawResponse_setOnlineStatus_user(~id=data.id),
                 (),
               ),
               (),

@@ -327,6 +327,7 @@ describe("Mutation", () => {
       data: {
         addedFriend: {
           id: "user-1",
+          friends: [{ id: "user-1" }],
         },
       },
     });
