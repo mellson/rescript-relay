@@ -301,7 +301,7 @@ describe("Mutation", () => {
     // await t.screen.findByText("Inline status: idle");
   });
 
-  test("Test multiple mutation targets", async () => {
+  test("Test multiple with added string input", async () => {
     queryMock.mockQuery({
       name: "TestMutationQuery",
       data: {
@@ -320,32 +320,72 @@ describe("Mutation", () => {
     await t.screen.findByText("First is online");
 
     queryMock.mockQuery({
-      name: "TestMutationWithMultipleTargetsMutation",
+      name: "TestMutationWithAddedStringInputMutation",
       variables: {
-        id: 1,
-        ids: [1, 2],
-        friendId: "user-1",
+        issue: {
+          id: "1",
+          onlineStatus: "Offline",
+        },
       },
       data: {
-        testIntInput1: {
-          success: true,
-        },
-        testIntInput2: {
-          success: true,
-        },
-        addFriend: {
-          addedFriend: {
+        testStringInput: {
+          user: {
             id: "user-1",
-            friends: [{ id: "user-1" }],
+            onlineStatus: "Offline",
+            friends: [],
           },
         },
       },
     });
 
     ReactTestUtils.act(() => {
-      t.fireEvent.click(t.screen.getByText("Test multiple targets"));
+      t.fireEvent.click(t.screen.getByText("Test string input"));
     });
 
-    await t.screen.findByText("Number of friends: 1");
+    await t.screen.findByText("First is offline");
+  });
+
+  test("Test multiple with added int input", async () => {
+    queryMock.mockQuery({
+      name: "TestMutationQuery",
+      data: {
+        loggedInUser: {
+          id: "user-1",
+          firstName: "First",
+          lastName: "Name",
+          onlineStatus: "Online",
+          friends: [],
+          memberOf,
+        },
+      },
+    });
+
+    t.render(test_mutation());
+    await t.screen.findByText("First is online");
+
+    queryMock.mockQuery({
+      name: "TestMutationWithAddedIntInputMutation",
+      variables: {
+        issue: {
+          id: 1,
+          onlineStatus: "Offline",
+        },
+      },
+      data: {
+        testIntInput: {
+          user: {
+            id: "user-1",
+            onlineStatus: "Offline",
+            friends: [],
+          },
+        },
+      },
+    });
+
+    ReactTestUtils.act(() => {
+      t.fireEvent.click(t.screen.getByText("Test int input"));
+    });
+
+    await t.screen.findByText("First is offline");
   });
 });

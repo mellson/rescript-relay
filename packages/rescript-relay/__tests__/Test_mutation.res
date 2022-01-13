@@ -79,22 +79,35 @@ module InlineFragment = %relay(`
     }
 `)
 
-module MutationWithMultipleTargets = %relay(`
-    mutation TestMutationWithMultipleTargetsMutation($id: Int!, $ids: [Int!]!, $friendId: ID!) @raw_response_type {
-      testIntInput1(id: $id) {
-        success
-      }
-      testIntInput2(ids: $ids) {
-        success
-      }
-      addFriend(friendId: $friendId) {
-        addedFriend{
-          id
-          friends {
+module MutationWithAddedStringInput = %relay(`
+    mutation TestMutationWithAddedStringInputMutation(
+      $issue: IssuesTestStringIdInput!
+      )  {
+        testStringInput(issue: $issue) {
+          user {
             id
+            onlineStatus
+            friends {
+              id
+            }
           }
         }
-      }
+    }
+`)
+
+module MutationWithAddedIntInput = %relay(`
+    mutation TestMutationWithAddedIntInputMutation(
+      $issue: IssuesTestIntIdInput!
+      )  {
+        testIntInput(issue: $issue) {
+          user {
+            id
+            onlineStatus
+            friends {
+              id
+            }
+          }
+        }
     }
 `)
 
@@ -297,14 +310,29 @@ module Test = {
       </button>
       <button
         onClick={_ => {
-          open MutationWithMultipleTargets
+          open MutationWithAddedStringInput
           let _ = commitMutation(
             ~environment,
-            ~variables={id: 1, ids: [1, 2], friendId: "user-1"},
+            ~variables=makeVariables(
+              ~issue=make_issuesTestStringIdInput(~id="1", ~onlineStatus=#Offline),
+            ),
             (),
           )
         }}>
-        {React.string("Test multiple targets")}
+        {React.string("Test string input")}
+      </button>
+      <button
+        onClick={_ => {
+          open MutationWithAddedIntInput
+          let _ = commitMutation(
+            ~environment,
+            ~variables=makeVariables(
+              ~issue=make_issuesTestIntIdInput(~id=1, ~onlineStatus=#Offline),
+            ),
+            (),
+          )
+        }}>
+        {React.string("Test int input")}
       </button>
     </div>
   }
